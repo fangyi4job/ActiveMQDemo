@@ -10,7 +10,7 @@
     <script src="../../js/jquery-3.2.1.js" type="text/javascript"></script>
 
     <style type="text/css">
-        #consumer {
+        #Consumer {
             width: 48%;
             border: 1px solid blue;
             height: 80%;
@@ -28,7 +28,7 @@
 
         textarea {
             width: 80%;
-            height: 100px;
+            height: 80%;
             border: 1px solid gray;
         }
 
@@ -46,9 +46,6 @@
 <div id="Consumer">
     <h2>Consumer</h2>
     <textarea id="message"></textarea>
-    <br>
-    <br>
-    <span id="status"></span>
 </div>
 
 
