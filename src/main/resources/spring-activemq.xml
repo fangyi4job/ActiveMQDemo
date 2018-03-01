@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:amq="http://activemq.apache.org/schema/core"
+       xmlns:jms="http://www.springframework.org/schema/jms"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://activemq.apache.org/schema/core
+       http://activemq.apache.org/schema/core/activemq-core.xsd
+       http://www.springframework.org/schema/jms
+       http://www.springframework.org/schema/jms/spring-jms.xsd">
+
+    <!--1.jms连接工厂对象-->
+    <!--1.1 声明activemq所使用的连接工厂对象
+        brokerURL:消息服务器中的连接地址
+        userName：用户名
+        password：密码
+    -->
+    <amq:connectionFactory id="amqConnectionFactory"
+                           brokerURL="tcp://127.0.0.1:61616"
+                           userName="admin"
+                           password="admian"/>
+    <!--2.jms连接的缓冲池-->
+    <bean id="connectionFactory"
+          class="org.springframework.jms.connection.CachingConnectionFactory">
+        <!--目标连接工厂对象-->
+        <property name="targetConnectionFactory"
+                  ref="amqConnectionFactory"/>
+        <!--连接池大小-->
+        <property name="sessionCacheSize"
+                  value="100"/>
+    </bean>
+
+    <!--3.jms中的生产者模版对象-->
+    <bean id="jmsQueueTemplate"
+          class="org.springframework.jms.core.JmsTemplate">
+        <!--给模版对象设置连接工厂对象-->
+        <constructor-arg ref="connectionFactory"/>
+
+        <!--是否是发布/订阅模式 false为队列模式，即P2P-->
+        <property name="pubSubDomain"
+                  value="false"/>
+    </bean>
+
+    <bean id="jmsTopicTemplate"
+          class="org.springframework.jms.core.JmsTemplate">
+        <!--设置工厂连接对象-->
+        <property name="connectionFactory"
+                  ref="connectionFactory"/>
+
+        <!--设置是否是发布/订阅模式 true为是，即多对多-->
+        <property name="pubSubDomain"
+                  value="true"/>
+    </bean>
+
+    <!--4.jms的消费者-->
+    <jms:listener-container
+        container-type="default"
+        destination-type="queue"
+        connection-factory="connectionFactory"
+        acknowledge="auto">
+
+        <!--消费者容器中包含的接听器引用对象
+        destination：监听的消息类型，即目的地
+        ref：对应的监听器类
+        -->
+        <jms:listener destination="amq:queue"
+                      ref="queueReceiver1"/>
+
+        <jms:listener destination="amq:queue"
+                      ref="queueReceiver2"/>
+    </jms:listener-container>
+
+    <jms:listener-container
+        destination-type="topic"
+        container-type="default"
+        acknowledge="auto"
+        connection-factory="connectionFactory">
+
+        <jms:listener destination="amq.topic"
+                      ref="topicReceiver1"/>
+
+        <jms:listener destination="amq.topic"
+                      ref="topicReceiver2"/>
+    </jms:listener-container>
+
+
+</beans>

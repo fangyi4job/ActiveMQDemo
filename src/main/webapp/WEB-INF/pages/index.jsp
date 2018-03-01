@@ -56,6 +56,23 @@
 
 <script type="text/javascript">
 
+    function send(controller) {
+        $.ajax({
+            url: "/" + controller,
+            data: {
+                message: $("#message").val()
+            },
+            success: function (data) {
+                if (data == 'suc') {
+                    $("#status").html("发送成功");
+                } else {
+                    $("#status").html("发送失败");
+                }
+                /*清空输入框的内容*/
+                $("#message").empty();
+            }
+        })
+    }
 
 </script>
 </body>

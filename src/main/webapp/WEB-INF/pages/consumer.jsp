@@ -51,6 +51,19 @@
 
 <script type="text/javascript">
 
+    getMessage();//第一次调用
+
+    function getMessage() {
+        $.ajax({
+            url: "/getMessage?r="+Math.random(),
+            success: function (msg) {
+                $("#message").val(msg);
+                /*每隔一秒发起请求获得消息*/
+                setTimeout(getMessage, 1000);
+            }
+        })
+
+    }
 
 </script>
 </body>
